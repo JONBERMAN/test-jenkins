@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        BUILD_NUMBER = "v8"  // 빌드 번호
+        BUILD_NUMBER = "v9"  // 빌드 번호
         IMAGE_NAME = "taehoon981/grey"  // Docker 이미지 이름
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-id') // jenkins에 등록한 dockerhub 자격증명 이름
     }
