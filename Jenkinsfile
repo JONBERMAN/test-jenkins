@@ -51,7 +51,7 @@ pipeline {
                 git credentialsId: 'github_access_token', 
                     url: 'https://github.com/JONBERMAN/k8s-manifest.git',
                     branch: 'main'
-                sh 'git config user.email "jenkins@yourdomain.com"
+                sh 'git config user.email "jenkins@yourdomain.com"'
                 sh 'git config user.name "Jenkins CI"'
                 // deployment.yaml 파일의 버전 정보를 현재 빌드 번호로 업데이트
                 sh "sed -i 's/my-app:.*\$/my-app:${BUILD_NUMBER}/g' deployment.yaml"
