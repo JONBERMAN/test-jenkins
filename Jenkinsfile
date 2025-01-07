@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        BUILD_NUMBER = "v2"  // 빌드 번호
+        BUILD_NUMBER = "v1"  // 빌드 번호
         IMAGE_NAME = "taehoon981/grey"  // Docker 이미지 이름
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-id') // jenkins에 등록한 dockerhub 자격증명 이름
     }
@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage('Push Image to ACR') {
+        stage('Push Image to HUB') {
             steps {
                 script {
                     echo "Push to Docker Hub"
@@ -43,6 +43,36 @@ pipeline {
                     echo "Push Success"
                 }
             }
+        }
+
+        stage('K8S Manifest Update') {
+            steps {
+                // GitHub에서 Kubernetes manifest 레포지토리 체크아웃
+                git credentialsId: 'github_access_token', 
+                    url: 'https://github.com/JONBERMAN/k8s-manifest.git',
+                    branch: 'main'
+
+                // deployment.yaml 파일의 버전 정보를 현재 빌드 번호로 업데이트
+                sh "sed -i 's/my-app:.*\$/my-app:${BUILD_NUMBER}/g' deployment.yaml"
+                
+                // Git에 변경 사항 추가
+                sh "git add deployment.yaml"
+                sh "git commit -m '[UPDATE] my-app ${BUILD_NUMBER} image versioning'"
+
+                // SSH로 GitHub에 푸시
+                sshagent(credentials: ['k8s-manifest-credential']) {
+                    sh "git remote set-url origin git@github.com:JONBERMAN/k8s-manifest.git"
+                    sh "git push -u origin main"
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs.'
         }
     }
 }
