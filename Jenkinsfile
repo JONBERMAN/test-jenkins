@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        BUILD_NUMBER = "v25"  // 빌드 번호
+        BUILD_NUMBER = "v30"  // 빌드 번호
         IMAGE_NAME = "192.168.1.183:443/test/grey"  // Harbor이미지 이름
         HARBOR_CREDENTIALS = credentials('harbor') // jenkins에 등록한 Harbor Credentials ID
     }
@@ -55,7 +55,7 @@ pipeline {
                 sh 'git config user.name "Jenkins CI"'
                 // deployment.yaml 파일의 버전 정보를 현재 빌드 번호로 업데이트
                 // Git 변경사항 추가
-                dir('cd') {
+                dir('manifests') {
                     sh """
                         sed -i 's|image: 192.168.1.183:443/test/grey:.*|image: 192.168.1.183:443/test/grey:${BUILD_NUMBER}|g' deployment.yaml
                         git add deployment.yaml
