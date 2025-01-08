@@ -54,8 +54,8 @@ pipeline {
                 sh 'git config user.email "jenkins@yourdomain.com"'
                 sh 'git config user.name "Jenkins CI"'
                 // deployment.yaml 파일의 버전 정보를 현재 빌드 번호로 업데이트
-                sh 'cd cd'
                 sh """
+                    cd cd       
                     sed -i 's|image: 192.168.1.183:443/test/grey:.*|image: taehoon981/grey:${BUILD_NUMBER}|g' deployment.yaml
                 """
                 // Git에 변경 사항 추가
