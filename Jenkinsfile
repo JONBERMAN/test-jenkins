@@ -57,7 +57,7 @@ pipeline {
                 // Git 변경사항 추가
                 dir('cd') {
                     sh """
-                        sed -i 's|image: 192.168.1.183:443/test/grey:.*|image: taehoon981/grey:${BUILD_NUMBER}|g' deployment.yaml
+                        sed -i 's|image: 192.168.1.183:443/test/grey:.*|image: 192.168.1.183:443/test/grey:${BUILD_NUMBER}|g' deployment.yaml
                         git add deployment.yaml
                         git commit -m '[UPDATE] my-app ${BUILD_NUMBER} image versioning'
                     """
