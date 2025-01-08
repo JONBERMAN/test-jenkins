@@ -2,8 +2,8 @@ pipeline {
     agent any
     environment {
         BUILD_NUMBER = "v10"  // 빌드 번호
-        IMAGE_NAME = "taehoon981/grey"  // Docker 이미지 이름
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-id') // jenkins에 등록한 dockerhub 자격증명 이름
+        IMAGE_NAME = "192.168.1.183:443/test/grey"  // Harbor이미지 이름
+        HARBOR_CREDENTIALS = credentials('harbor') // jenkins에 등록한 Harbor Credentials ID
     }
     stages {
         stage('Checkout') {
@@ -14,11 +14,11 @@ pipeline {
             }
         }
         
-        stage('Login to Docker') {
+        stage('Login to Harbor') {
             steps {
                 script {
-                    // Docker Hub 로그인
-                    sh "echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin"
+                    // Harbor  Hub 로그인
+                    sh "docker login -u ${HARBOR_CREDENTIALS_USR} -p ${HARBOR_CREDENTIALS_PSW} 192.168.1.183:443"
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
         stage('Push Image to HUB') {
             steps {
                 script {
-                    echo "Push to Docker Hub"
+                    echo "Push to Harbor"
                     // Docker 이미지를 Docker Hub에 푸시
                     sh "docker push ${IMAGE_NAME}:${BUILD_NUMBER}"
                     echo "Push Success"
