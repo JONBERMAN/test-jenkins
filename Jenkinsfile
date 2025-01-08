@@ -55,13 +55,14 @@ pipeline {
                 sh 'git config user.name "Jenkins CI"'
                 // deployment.yaml 파일의 버전 정보를 현재 빌드 번호로 업데이트
                 // Git 변경사항 추가
-                sh """
-                    cd cd       
-                    sed -i 's|image: 192.168.1.183:443/test/grey:.*|image: taehoon981/grey:${BUILD_NUMBER}|g' deployment.yaml
-                    git add deployment.yaml
-                    git commit -m '[UPDATE] my-app ${BUILD_NUMBER} image versioning'
-                """
-               
+                dir('cd') {
+                    sh """
+                        sed -i 's|image: 192.168.1.183:443/test/grey:.*|image: taehoon981/grey:${BUILD_NUMBER}|g' deployment.yaml
+                        git add deployment.yaml
+                        git commit -m '[UPDATE] my-app ${BUILD_NUMBER} image versioning'
+                    """
+                }
+
                 // SSH로 GitHub에 푸시
                 sshagent(credentials: ['k8s-manifest-credential']) {
                     sh "git remote set-url origin git@github.com:JONBERMAN/k8s-manifest.git"
