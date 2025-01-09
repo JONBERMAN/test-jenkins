@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        BUILD_NUMBER = "v19"  // 빌드 번호
+        BUILD_NUMBER = "v20"  // 빌드 번호
         IMAGE_NAME = "192.168.1.183:443/test/frontend"  // Harbor이미지 이름
         HARBOR_CREDENTIALS = credentials('harbor') // jenkins에 등록한 Harbor Credentials ID
         SLACK_CHANNEL= '#jenkins'
@@ -76,13 +76,24 @@ pipeline {
     }
     post {
         success {
-            echo 'Pipeline completed successfully!'
-            slackSend(channel: env.SLACK_CHANNEL, color: 'good', message: "Build Success")
+            script {
+                // 빌드 성공 시 메시지 출력
+                echo 'Pipeline started and completed successfully!'
+                slackSend(channel: env.SLACK_CHANNEL, color: 'good', message: "Build Success")
+            }
         }
         failure {
-            echo 'Pipeline failed. Check the logs.'
-            slackSend(channel: env.SLACK_CHANNEL, color: 'danger', message: "Build Failed")
+            script {
+                // 빌드 실패 시 메시지 출력
+                echo 'Pipeline failed. Check the logs.'
+                slackSend(channel: env.SLACK_CHANNEL, color: 'danger', message: "Build Failed")
+            }
+        }
+        always {
+            script {
+                // 빌드가 성공하거나 실패한 후 항상 실행되는 구문
+                echo "Pipeline execution finished."
+            }
         }
     }
 }
-
