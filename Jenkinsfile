@@ -1,16 +1,18 @@
 pipeline {
     agent any
     environment {
-        BUILD_NUMBER = "v13"  // 빌드 번호
+        BUILD_NUMBER = "v14"  // 빌드 번호
         IMAGE_NAME = "192.168.1.183:443/test/frontend"  // Harbor이미지 이름
         HARBOR_CREDENTIALS = credentials('harbor') // jenkins에 등록한 Harbor Credentials ID
+        SLACK_CHANNEL= '#jenkins'
     }
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main',
                     credentialsId: 'github_access_token',  // 미리 설정한 GitHub 자격증명 ID
-                    url: 'https://github.com/JONBERMAN/test-jenkins.git'  // 내 Git URL
+                    url: 'https://github.com/JONBERMAN/test-jenkins.git'  // 내 Git URLi
+                slackSend(channel: env.SLACK_CHANNEL, color: 'good', message: "Build Started")
             }
         }
         
@@ -74,9 +76,11 @@ pipeline {
     post {
         success {
             echo 'Pipeline completed successfully!'
+            slackSend(channel: env.SLACK_CHANNEL, color: 'good', message: "Build Success")
         }
         failure {
             echo 'Pipeline failed. Check the logs.'
+            slackSend(channel: env.SLACK_CHANNEL, color: 'danger', message: "Build Failed")
         }
     }
 }
