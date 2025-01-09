@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        BUILD_NUMBER = "v31"  // 빌드 번호
-        IMAGE_NAME = "192.168.1.183:443/test/grey"  // Harbor이미지 이름
+        BUILD_NUMBER = "v1"  // 빌드 번호
+        IMAGE_NAME = "192.168.1.183:443/test/frontend"  // Harbor이미지 이름
         HARBOR_CREDENTIALS = credentials('harbor') // jenkins에 등록한 Harbor Credentials ID
     }
     stages {
@@ -57,8 +57,8 @@ pipeline {
                 // Git 변경사항 추가
                 dir('manifests') {
                     sh """
-                        sed -i 's|image: 192.168.1.183:443/test/grey:.*|image: 192.168.1.183:443/test/grey:${BUILD_NUMBER}|g' deployment.yaml
-                        git add deployment.yaml
+                        sed -i 's|image: 192.168.1.183:443/test/frontend:.*|image: 192.168.1.183:443/test/frontend:${BUILD_NUMBER}|g' deploy.yaml
+                        git add deploy.yaml
                         git commit -m '[UPDATE] my-app ${BUILD_NUMBER} image versioning'
                     """
                 }
