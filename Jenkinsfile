@@ -11,22 +11,22 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'github_access_token',  // 미리 설정한 GitHub 자격증명 ID
-                    url: 'https://github.com/JONBERMAN/test-jenkins.git'  // 내 Git URLi
+                    url: 'https://github.com/JONBERMAN/test-jenkins.git'  // 내 Git URL
             }
         }
-        
+
         stage('Login to Harbor') {
             steps {
                 script {
-                    // Harbor  Hub 로그인
+                    // Harbor Hub 로그인
                     sh "docker login -u ${HARBOR_CREDENTIALS_USR} -p ${HARBOR_CREDENTIALS_PSW} 192.168.1.183:443"
                 }
             }
         }
-        
+
         stage('Build Docker Image') {
             steps {
-                dir('frontend'){
+                dir('frontend') {
                     echo "Start to Build the Image"
                     // Docker 이미지 빌드
                     sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
@@ -49,7 +49,7 @@ pipeline {
         stage('K8S Manifest Update') {
             steps {
                 // GitHub에서 Kubernetes manifest 레포지토리 체크아웃
-                git credentialsId: 'github_access_token', 
+                git credentialsId: 'github_access_token',
                     url: 'https://github.com/JONBERMAN/k8s-manifest.git',
                     branch: 'main'
                 sh 'git config user.email "jenkins@yourdomain.com"'
@@ -69,18 +69,20 @@ pipeline {
                 sshagent(credentials: ['k8s-manifest-credential']) {
                     sh "git remote set-url origin git@github.com:JONBERMAN/k8s-manifest.git"
                     sh "git push -u origin main"
-                  
                 }
             }
         }
     }
+
     post {
         success {
+            script {
                 // 빌드 성공 시 메시지 출력
                 echo 'Pipeline started and completed successfully!'
                 slackSend(channel: env.SLACK_CHANNEL, color: 'good', message: '빌드 성공')
             }
         }
+
         failure {
             script {
                 // 빌드 실패 시 메시지 출력
@@ -88,5 +90,6 @@ pipeline {
                 slackSend(channel: env.SLACK_CHANNEL, color: 'danger', message: '빌드 실패')
             }
         }
-    
+    }
 }
+
