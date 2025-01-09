@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        BUILD_NUMBER = "v25"  // 빌드 번호
+        BUILD_NUMBER = "v45"  // 빌드 번호
         IMAGE_NAME = "192.168.1.183:443/test/frontend"  // Harbor이미지 이름
         HARBOR_CREDENTIALS = credentials('harbor') // jenkins에 등록한 Harbor Credentials ID
         SLACK_CHANNEL= '#jenkins'
