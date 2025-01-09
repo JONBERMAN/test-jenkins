@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        BUILD_NUMBER = "v17"  // 빌드 번호
+        BUILD_NUMBER = "v19"  // 빌드 번호
         IMAGE_NAME = "192.168.1.183:443/test/frontend"  // Harbor이미지 이름
         HARBOR_CREDENTIALS = credentials('harbor') // jenkins에 등록한 Harbor Credentials ID
         SLACK_CHANNEL= '#jenkins'
@@ -12,7 +12,6 @@ pipeline {
                 git branch: 'main',
                     credentialsId: 'github_access_token',  // 미리 설정한 GitHub 자격증명 ID
                     url: 'https://github.com/JONBERMAN/test-jenkins.git'  // 내 Git URLi
-                slackSend(channel: env.SLACK_CHANNEL, color: 'good', message: "Build Start ! ")
             }
         }
         
@@ -70,6 +69,7 @@ pipeline {
                 sshagent(credentials: ['k8s-manifest-credential']) {
                     sh "git remote set-url origin git@github.com:JONBERMAN/k8s-manifest.git"
                     sh "git push -u origin main"
+                  
                 }
             }
         }
@@ -81,7 +81,7 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed. Check the logs.'
-            slackSend(channel: env.SLACK_CHANNEL, color: 'danger', message: "Build Failed!")
+            slackSend(channel: env.SLACK_CHANNEL, color: 'danger', message: "Build Failed")
         }
     }
 }
